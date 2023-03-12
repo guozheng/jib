@@ -18,7 +18,7 @@ public class MainVerticle extends AbstractVerticle {
     private final Logger logger = LoggerFactory.getLogger(MainVerticle.class);
 
     @Override
-    public void start(Future<Void> startFuture) {
+    public void start() {
         Router router = Router.router(vertx);
 
         router.get("/").handler(this::hello);
@@ -26,26 +26,20 @@ public class MainVerticle extends AbstractVerticle {
 
         vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(8080, asyncStart -> {
-                    if (asyncStart.succeeded()) {
-                        startFuture.complete();
-                        logger.info("HTTP server running on port 8080");
-                    } else {
-                        logger.error("Woops", asyncStart.cause());
-                        startFuture.fail(asyncStart.cause());
-                    }
-                });
+                .listen(8080)
+            .onSuccess(server ->
+                System.out.println("server started on port: " + server.actualPort()));
     }
 
     private void hello(RoutingContext context) {
-        logger.info("Hello request from {}", context.request().remoteAddress());
+        logger.info("Hello request from {}", context.request().connection().remoteAddress());
         context.response()
                 .putHeader("Content-Type", "text/plain")
                 .end("Hello from Vert.x!");
     }
 
     private void now(RoutingContext context) {
-        logger.info("Time request from {}", context.request().remoteAddress());
+        logger.info("Time request from {}", context.request().connection().remoteAddress());
         JsonObject data = new JsonObject()
                 .put("powered-by", "vertx")
                 .put("current-time", System.currentTimeMillis());

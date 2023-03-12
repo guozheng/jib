@@ -1,5 +1,5 @@
 plugins {
-    id 'io.vertx.vertx-plugin' version '0.1.0'
+    id 'io.vertx.vertx-plugin' version '1.4.0'
     id 'com.google.cloud.tools.jib' version '3.3.1'
 }
 
@@ -13,13 +13,21 @@ dependencies {
 }
 
 vertx {
-    vertxVersion = '3.6.0.CR1'
+    vertxVersion = '4.1.2'
     mainVerticle = 'example.vertx.MainVerticle'
     jvmArgs = ['-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory']
 }
 
 jib {
+    to {
+        image = 'guozheng/jib-vertx'
+    }
     container {
         ports = ['8080']
     }
+}
+
+java {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 }
